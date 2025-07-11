@@ -1,0 +1,6 @@
+telegram:
+  token: 7827211338:AAEbxVGVvMSxLlbeMmr0eehPuXi8OXqAmxg
+kafka:
+  bootstrap_servers_value: localhost:9092
+server:
+  port: 8080
