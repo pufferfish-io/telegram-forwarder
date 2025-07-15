@@ -5,10 +5,10 @@ import (
 	"log"
 	"net/http"
 
-	cfg "tgforwarder/config"
-	cfgModel "tgforwarder/config/model"
-	httpserver "tgforwarder/http"
-	kafka "tgforwarder/messaging"
+	cfg "tgforwarder/internal/config"
+	cfgModel "tgforwarder/internal/config/model"
+	httpserver "tgforwarder/internal/delivery/http"
+	kafka "tgforwarder/internal/messaging"
 )
 
 func main() {

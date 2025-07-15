@@ -4,7 +4,7 @@ import (
 	"io"
 	"log"
 	"net/http"
-	kafka "tgforwarder/messaging"
+	kafka "tgforwarder/internal/messaging"
 )
 
 func Webhook(w http.ResponseWriter, r *http.Request) {

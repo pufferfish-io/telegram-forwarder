@@ -2,7 +2,7 @@ package httpserver
 
 import (
 	"net/http"
-	"tgforwarder/http/handler"
+	"tgforwarder/internal/handler"
 )
 
 func SetupRoutes() *http.ServeMux {

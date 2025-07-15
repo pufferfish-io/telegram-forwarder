@@ -6,7 +6,7 @@ import (
 	"strings"
 	"sync"
 
-	cfg "tgforwarder/config/interfaces"
+	cfg "tgforwarder/internal/config/interfaces"
 
 	"gopkg.in/yaml.v3"
 )
