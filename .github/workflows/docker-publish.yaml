@@ -7,6 +7,7 @@ on:
 
 jobs:
   docker:
+    name: 🛠 Build and Push Image
     runs-on: ubuntu-latest
 
     permissions:
@@ -14,13 +15,13 @@ jobs:
       packages: write
 
     steps:
-      - name: 🔽 Checkout
+      - name: 🔽 Checkout source
         uses: actions/checkout@v4
 
-      - name: 🐳 Login to GHCR
+      - name: 🔐 Login to GitHub Container Registry (GHCR)
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: 🏗 Build and push
+      - name: 🐳 Build & Push
         run: |
           IMAGE=ghcr.io/${{ github.repository }}:${{ github.ref_name }}
           echo "📦 Building and pushing: $IMAGE"
