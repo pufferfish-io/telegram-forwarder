@@ -1,21 +1,19 @@
-# Stage 1 — Build
 FROM golang:1.24.4 AS builder
-
 WORKDIR /app
 
-# Копируем всё, включая internal и cmd
+COPY go.mod go.sum ./
+RUN go mod download
+
 COPY . .
 
-# Сборка с указанием правильной директории
-RUN go build -o app ./cmd/tgforwarder
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+    go build -trimpath -ldflags="-s -w" -o app ./cmd/tgforwarder
 
-# Stage 2 — Runtime
-FROM debian:bullseye-slim
-
+FROM gcr.io/distroless/static:nonroot
 WORKDIR /app
 
-# Копируем бинарник из билдер-стадии
-COPY --from=builder /app/app .
+COPY --from=builder /app/app /app/app
 
 EXPOSE 8080
-CMD ["./app"]
+USER nonroot:nonroot
+ENTRYPOINT ["/app/app"]

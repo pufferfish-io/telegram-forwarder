@@ -8,10 +8,15 @@ import (
 
 var producer *kafka.Producer
 
-func Init(brokers string) {
+type Option struct {
+	BootstrapServersKey string
+	Brokers             string
+}
+
+func Init(opt Option) {
 	var err error
 	producer, err = kafka.NewProducer(&kafka.ConfigMap{
-		bootstrapServersKey: brokers,
+		opt.BootstrapServersKey: opt.Brokers,
 	})
 	if err != nil {
 		log.Fatalf("Kafka Producer init error: %v", err)

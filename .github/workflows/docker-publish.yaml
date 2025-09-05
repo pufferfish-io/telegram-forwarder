@@ -1,9 +1,12 @@
 name: 🐳 Build & Push telegram-forwarder
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag (e.g. v1.2.3 or sha)"
+        required: true
+        default: "manual"
 
 jobs:
   docker:
@@ -22,8 +25,9 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: 🐳 Build & Push
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}:${{ github.event.inputs.tag }}
         run: |
-          IMAGE=ghcr.io/${{ github.repository }}:${{ github.ref_name }}
           echo "📦 Building and pushing: $IMAGE"
-          docker build -t $IMAGE .
-          docker push $IMAGE
+          docker build -t "$IMAGE" .
+          docker push "$IMAGE"

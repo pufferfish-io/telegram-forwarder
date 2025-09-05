@@ -1,11 +1,18 @@
-package handler
+package httpserver
 
 import (
+	"net/http"
+
 	"io"
 	"log"
-	"net/http"
 	kafka "tgforwarder/internal/messaging"
 )
+
+func SetupRoutes() *http.ServeMux {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/webhook", Webhook)
+	return mux
+}
 
 func Webhook(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
