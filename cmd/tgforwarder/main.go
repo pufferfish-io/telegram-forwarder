@@ -19,16 +19,12 @@ func main() {
 	logger, clean := logger.NewZapLogger()
 	defer clean()
 
-	prod, err := messaging.NewKafkaProducer(messaging.Option{
-		Logger:              logger,
-		BootstrapServersKey: cfg.Kafka.BootstrapServersKey,   // "bootstrap.servers"
-		Brokers:             cfg.Kafka.BootstrapServersValue, // "176.98.176.199:9092"
-
-		SecurityProtocol: cfg.Kafka.SecurityProtocol, // "SASL_PLAINTEXT"
-		SaslMechanism:    cfg.Kafka.SaslMechanism,    // "SCRAM-SHA-512"
-		SaslUsername:     cfg.Kafka.SaslUsername,
-		SaslPassword:     cfg.Kafka.SaslPassword,
-	})
+    prod, err := messaging.NewKafkaProducer(messaging.Option{
+        Logger:       logger,
+        Broker:       cfg.Kafka.BootstrapServersValue,
+        SaslUsername: cfg.Kafka.SaslUsername,
+        SaslPassword: cfg.Kafka.SaslPassword,
+    })
 
 	if err != nil {
 		log.Fatalf("config: %v", err)

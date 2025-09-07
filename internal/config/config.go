@@ -12,15 +12,10 @@ type Server struct {
 }
 
 type Kafka struct {
-	BootstrapServersKey   string `validate:"required" env:"BOOTSTRAP_SERVERS_KEY"   envDefault:"bootstrap.servers"`
-	BootstrapServersValue string `validate:"required" env:"BOOTSTRAP_SERVERS_VALUE"`
-	TgMessTopicName       string `validate:"required" env:"TG_MESS_TOPIC_NAME"`
-
-	// Новые поля для SASL/SCRAM
-	SecurityProtocol string `validate:"required,oneof=PLAINTEXT SSL SASL_PLAINTEXT SASL_SSL" env:"SECURITY_PROTOCOL" envDefault:"SASL_PLAINTEXT"`
-	SaslMechanism    string `validate:"required,oneof=PLAIN SCRAM-SHA-256 SCRAM-SHA-512 OAUTHBEARER" env:"SASL_MECHANISM" envDefault:"SCRAM-SHA-512"`
-	SaslUsername     string `validate:"required" env:"SASL_USERNAME"`
-	SaslPassword     string `validate:"required" env:"SASL_PASSWORD"`
+    BootstrapServersValue string `validate:"required" env:"BOOTSTRAP_SERVERS_VALUE"`
+    TgMessTopicName       string `validate:"required" env:"TG_MESS_TOPIC_NAME"`
+    SaslUsername          string `validate:"required" env:"SASL_USERNAME"`
+    SaslPassword          string `validate:"required" env:"SASL_PASSWORD"`
 }
 
 type Telegram struct {
