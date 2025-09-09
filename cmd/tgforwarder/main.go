@@ -19,12 +19,18 @@ func main() {
 	logger, clean := logger.NewZapLogger()
 	defer clean()
 
-    prod, err := messaging.NewKafkaProducer(messaging.Option{
-        Logger:       logger,
-        Broker:       cfg.Kafka.BootstrapServersValue,
-        SaslUsername: cfg.Kafka.SaslUsername,
-        SaslPassword: cfg.Kafka.SaslPassword,
-    })
+	opt := messaging.Option{
+		Logger:       logger,
+		Broker:       cfg.Kafka.BootstrapServersValue,
+		SaslUsername: cfg.Kafka.SaslUsername,
+		SaslPassword: cfg.Kafka.SaslPassword,
+	}
+
+	if err := messaging.EnsureTopic(opt, cfg.Kafka.TgMessTopicName, 3, 1); err != nil {
+		log.Fatalf("kafka ensure topic: %v", err)
+	}
+
+	prod, err := messaging.NewKafkaProducer(opt)
 
 	if err != nil {
 		log.Fatalf("config: %v", err)
