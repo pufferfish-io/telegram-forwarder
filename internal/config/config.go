@@ -8,14 +8,14 @@ import (
 )
 
 type Server struct {
-	Addr string `validate:"required" env:"ADDR" envDefault:":8080"`
+	Addr string `validate:"required" env:"ADDR_TELEGRAM_FORWARDER"`
 }
 
 type Kafka struct {
-    BootstrapServersValue string `validate:"required" env:"BOOTSTRAP_SERVERS_VALUE"`
-    TgMessTopicName       string `validate:"required" env:"TG_MESS_TOPIC_NAME"`
-    SaslUsername          string `validate:"required" env:"SASL_USERNAME"`
-    SaslPassword          string `validate:"required" env:"SASL_PASSWORD"`
+	BootstrapServersValue string `validate:"required" env:"BOOTSTRAP_SERVERS_VALUE"`
+	TgMessTopicName       string `validate:"required" env:"TOPIC_NAME_TELEGRAM_UPDATES"`
+	SaslUsername          string `validate:"required" env:"SASL_USERNAME"`
+	SaslPassword          string `validate:"required" env:"SASL_PASSWORD"`
 }
 
 type Telegram struct {
@@ -23,14 +23,14 @@ type Telegram struct {
 }
 
 type Api struct {
-	TgWebHookPath   string `validate:"required" env:"TG_WEB_HOOK_PATH"`
-	HealthCheckPath string `validate:"required" env:"HEALTH_CHECK_PATH"`
+	TgWebHookPath   string `validate:"required" env:"PATH_TG_FORWARDER_TELEGRAM_WEB_HOOK"`
+	HealthCheckPath string `validate:"required" env:"PATH_TG_FORWARDER_HEALTH_CHECK"`
 }
 type Config struct {
-	Server   Server   `envPrefix:"TG_FORWARDER_SERVER_"`
-	Kafka    Kafka    `envPrefix:"TG_FORWARDER_KAFKA_"`
-	Telegram Telegram `envPrefix:"TG_FORWARDER_TELEGRAM_"`
-	Api      Api      `envPrefix:"TG_FORWARDER_API_"`
+	Server   Server   `envPrefix:"SERVER_"`
+	Kafka    Kafka    `envPrefix:"KAFKA_"`
+	Telegram Telegram `envPrefix:"TELEGRAM_"`
+	Api      Api      `envPrefix:"API_"`
 }
 
 func Load() (*Config, error) {
