@@ -26,10 +26,6 @@ func main() {
 		SaslPassword: cfg.Kafka.SaslPassword,
 	}
 
-	if err := messaging.EnsureTopic(opt, cfg.Kafka.TgMessTopicName, 3, 1); err != nil {
-		log.Fatalf("kafka ensure topic: %v", err)
-	}
-
 	prod, err := messaging.NewKafkaProducer(opt)
 
 	if err != nil {
