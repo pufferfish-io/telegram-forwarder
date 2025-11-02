@@ -33,7 +33,7 @@ func main() {
 	}
 	defer prod.Close()
 
-	mux := api.SetupRoutes(api.Options{Logger: logger, MessProducer: prod, TgMessTopicName: cfg.Kafka.TgMessTopicName, TgWebHookPath: cfg.Api.TgWebHookPath, HealthCheckPath: cfg.Api.HealthCheckPath})
+	mux := api.SetupRoutes(api.Options{Logger: logger, MessProducer: prod, TgMessTopicName: cfg.Kafka.TgMessTopicName, TgWebHookPath: "/webhook", HealthCheckPath: "/healthz"})
 	log.Printf("🌐 Webhook server is listening on %s...", cfg.Server.Addr)
 	log.Fatal(http.ListenAndServe(cfg.Server.Addr, mux))
 }

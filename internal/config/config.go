@@ -22,15 +22,10 @@ type Telegram struct {
 	Token string `validate:"required" env:"TOKEN"`
 }
 
-type Api struct {
-	TgWebHookPath   string `validate:"required" env:"PATH_TG_FORWARDER_TELEGRAM_WEB_HOOK"`
-	HealthCheckPath string `validate:"required" env:"PATH_TG_FORWARDER_HEALTH_CHECK"`
-}
 type Config struct {
 	Server   Server   `envPrefix:"SERVER_"`
 	Kafka    Kafka    `envPrefix:"KAFKA_"`
 	Telegram Telegram `envPrefix:"TELEGRAM_"`
-	Api      Api      `envPrefix:"API_"`
 }
 
 func Load() (*Config, error) {
