@@ -17,6 +17,7 @@ jobs:
 
     env:
       IMAGE: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+      LATEST_IMAGE: ghcr.io/${{ github.repository }}:latest
 
     steps:
       - name: 🔽 Checkout source
@@ -34,10 +35,12 @@ jobs:
 
       - name: 🐳 Build & Push (${{ env.IMAGE }})
         run: |
-          echo "📦 Building and pushing: $IMAGE"
+          echo "📦 Building and pushing: $IMAGE and $LATEST_IMAGE"
           docker build \
             --build-arg VERSION="${TAG}" \
             --build-arg COMMIT="${SHORT_SHA}" \
             --build-arg BUILT_AT="${BUILT_AT}" \
-            -t "$IMAGE" .
+            -t "$IMAGE" \
+            -t "$LATEST_IMAGE" .
           docker push "$IMAGE"
+          docker push "$LATEST_IMAGE"
