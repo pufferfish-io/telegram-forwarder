@@ -1,38 +1,36 @@
-# telegram-forwarder
+```mermaid
+flowchart LR
+  TG["Telegram Bot API"] -->|Webhook| FWD["telegram-forwarder"]
+  FWD -->|Сырые данные| KAFKA["Kafka: telegram_updates"]
+  KAFKA -->|Внутренние сервисы| PIPE["остальной конвейер"]
+```
 
-## Что делает
+## О приложении
 
-1. Поднимает HTTP-сервер с `/webhook`, чтобы принимать обновления Telegram (ожидает тело webhook запроса).
-2. Прокидывает сырые данные запроса в Kafka-топик, имя которого приходит из переменной `KAFKA_TOPIC_NAME_TELEGRAM_UPDATES`.
-3. Поддерживает простой `/healthz` для readiness/liveness.
-4. Логирует отправку/ошибки через `zap` и практикует SCRAM-SHA512 для Kafka-продьюсера.
+telegram-forwarder — лёгкий HTTP‑шлюз, который принимает webhook‑запросы от Telegram Bot API и без изменений отправляет их в Kafka. Сервис не парсит апдейты и не проверяет подписи: он лишь надёжно доставляет тело запроса в конвейер.
 
-## Запуск
+## Роль приложения в архитектуре проекта
 
-1. Задайте окружение в `.env` или экспортом (см. раздел ниже).
-2. Соберите и запустите локально:
+Компонент открывает входную точку Telegram‑ветки:
+
+```mermaid
+flowchart LR
+    telegram-forwarder --> telegram-normalizer --> message-responder --> message-responder-ocr --> doc2text --> telegram-response-preparer --> telegram-sender
+```
+Благодаря ему остальные сервисы не работают с публичным интернетом и могут читать события из Kafka в удобном формате. Также forwarder предоставляет `/healthz`, чтобы оркестратор понимал готовность узла.
+
+## Локальный запуск
+
+1. Убедитесь, что Go ≥ 1.24 установлен и есть доступ к Kafka‑кластеру. Для отладки webhook можно использовать `ngrok` или локальный reverse proxy, который прокинет запросы Telegram на ваш порт.
+2. Экспортируйте переменные окружения:
+   - `SERVER_ADDR_TELEGRAM_FORWARDER` — адрес HTTP‑сервера (например, `:8080`).
+   - `KAFKA_BOOTSTRAP_SERVERS_VALUE` — список брокеров.
+   - `KAFKA_TOPIC_NAME_TELEGRAM_UPDATES` — имя Kafka‑топика с сырыми апдейтами.
+   - `KAFKA_SASL_USERNAME` и `KAFKA_SASL_PASSWORD` — заполните, если Kafka требует SASL/PLAIN.
+   - `TELEGRAM_TOKEN` — токен бота (forwarder хранит его, чтобы, например, проверять секрет при необходимости).
+3. Запустите сервис:
    ```bash
    go run ./cmd/tgforwarder
    ```
-3. Или соберите и прогоните Docker-образ:
-   ```bash
-   docker build -t telegram-forwarder .
-   docker run --rm -e ... telegram-forwarder
-   ```
-
-## Переменные окружения
-
-Все переменные обязательны — сервис валидирует их через `validator` и не стартует без них.
-
-- `SERVER_ADDR_TELEGRAM_FORWARDER` — адрес и порт HTTP-сервера (`0.0.0.0:8080`, `:9000` и т.п.).
-- `KAFKA_BOOTSTRAP_SERVERS_VALUE` — список брокеров в формате `host:port[,host:port]`.
-- `KAFKA_TOPIC_NAME_TELEGRAM_UPDATES` — куда писать входящие обновления Telegram.
-- `KAFKA_SASL_USERNAME` и `KAFKA_SASL_PASSWORD` — аутентификация SASL/PLAIN через SCRAM-SHA512.
-- `TELEGRAM_TOKEN` — токен бота (подготовлено для будущей валидации, пока не используется).
-
-## Примечания
-
-- `/webhook` лишь читает тело запроса и кладёт его как `[]byte` в Kafka, авторизация/парсинг происходит downstream.
-- `/healthz` возвращает `200 OK`, чтобы оркестраторы могли проверять доступность.
-- Kafka-продьюсер настраивается через `internal/messaging`, использует `sarama.SyncProducer` и логирует partition/offset при каждом `Send`.
-- `zap` логгер создаётся в `internal/logger`, а конфигурация берётся через `internal/config` и `caarlos0/env`.
+   либо соберите контейнер `docker build -t telegram-forwarder .`.
+4. Настройте Telegram webhook `https://<ваш-домен>/webhook` и убедитесь, что сообщения появляются в `KAFKA_TOPIC_NAME_TELEGRAM_UPDATES`. Готовность проверяется запросом `GET /healthz`.
